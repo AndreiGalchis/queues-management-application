@@ -14,10 +14,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Presentation extends JFrame {
-    private List<Employee> addedEmployees = new ArrayList<>();
-    private List<Task> addedTasks = new ArrayList<>();
     private final TaskManagement taskManagement;
-    private ComplexTask complexTask;
 
     private final JLabel chooseOperationLabel;
     private final JRadioButton addEmployeeRadio;
@@ -25,16 +22,11 @@ public class Presentation extends JFrame {
     private final JRadioButton assignTaskToEmplRadio;
     private final JRadioButton viewEmplAndTasksRadio;
     private final JRadioButton modifyTaskStatusRadio;
-    private final JRadioButton viewStatisticsRadio;
     private final JRadioButton tieTasks;
     private final JButton continueButton;
-    private final JButton printTasksButton;
 
-    public Presentation(List<Employee> addedEmployees, List<Task> addedTasks, TaskManagement taskManagement, ComplexTask complexTask) {
-        this.addedEmployees = addedEmployees;
-        this.addedTasks = addedTasks;
+    public Presentation(TaskManagement taskManagement) {
         this.taskManagement = taskManagement;
-        this.complexTask = complexTask;
 
         chooseOperationLabel = new JLabel("Choose Operation:");
         addEmployeeRadio = new JRadioButton("Add employees");
@@ -42,10 +34,8 @@ public class Presentation extends JFrame {
         assignTaskToEmplRadio = new JRadioButton("Assign task to employee");
         viewEmplAndTasksRadio = new JRadioButton("View employees and their tasks");
         modifyTaskStatusRadio = new JRadioButton("Modify the status of task");
-        viewStatisticsRadio = new JRadioButton("View the statistics");
         tieTasks = new JRadioButton("Tie tasks");
         continueButton = new JButton("Continue");
-        printTasksButton = new JButton("Print Assigned Tasks");
 
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(addEmployeeRadio);
@@ -53,16 +43,15 @@ public class Presentation extends JFrame {
         buttonGroup.add(assignTaskToEmplRadio);
         buttonGroup.add(viewEmplAndTasksRadio);
         buttonGroup.add(modifyTaskStatusRadio);
-        buttonGroup.add(viewStatisticsRadio);
+        buttonGroup.add(tieTasks);
 
         setTitle("Presentation");
-        setLayout(new GridLayout(4,2));
+        setLayout(new GridLayout(8,1));
         setLocationRelativeTo(null);
         setSize(500, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         continueButton.addActionListener(new ContinueListener());
-        printTasksButton.addActionListener(new PrintTasksListener());
 
         add(chooseOperationLabel);
         add(addEmployeeRadio);
@@ -70,10 +59,8 @@ public class Presentation extends JFrame {
         add(assignTaskToEmplRadio);
         add(viewEmplAndTasksRadio);
         add(modifyTaskStatusRadio);
-        add(viewStatisticsRadio);
         add(tieTasks);
         add(continueButton);
-        add(printTasksButton);
 
         setVisible(true);
     }
@@ -81,38 +68,28 @@ public class Presentation extends JFrame {
     public class ContinueListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-                if (addEmployeeRadio.isSelected()) {
-                    AddEmployees addEmployees = new AddEmployees(addedEmployees, addedTasks, taskManagement, complexTask);
-                    setVisible(false);
-                } else if (addTaskRadio.isSelected()) {
-                    AddTask addTask = new AddTask(addedTasks, addedEmployees, taskManagement, complexTask);
-                    setVisible(false);
-                } else if (assignTaskToEmplRadio.isSelected()) {
-                    AssignTaskToEmployee assignTaskToEmployee = new AssignTaskToEmployee(addedEmployees, addedTasks, taskManagement, complexTask);
-                    setVisible(false);
-                } else if (viewEmplAndTasksRadio.isSelected()) {
-                    ViewEmployeesAndTheirTasks viewEmployeesAndTheirTasks = new ViewEmployeesAndTheirTasks();
-                    setVisible(false);
-                } else if (modifyTaskStatusRadio.isSelected()) {
-                    ModifyStatusOfTask modifyStatusOfTask = new ModifyStatusOfTask();
-                    setVisible(false);
-                } else if (viewStatisticsRadio.isSelected()) {
-                    ViewStatistics viewStatistics = new ViewStatistics();
-                    setVisible(false);
-                } else if (tieTasks.isSelected()) {
-                    TieTasks tieTasks = new TieTasks(addedTasks, addedEmployees, taskManagement, complexTask);
-                    setVisible(false);
-                } else {
-                    System.out.println("No option selected.");
-                    return;
-                }
-        }
-    }
-
-    public class PrintTasksListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            taskManagement.printEmployeeTasks();
+            if (addEmployeeRadio.isSelected()) {
+                AddEmployees addEmployees = new AddEmployees(taskManagement);
+                setVisible(false);
+            } else if (addTaskRadio.isSelected()) {
+                AddTask addTask = new AddTask(taskManagement);
+                setVisible(false);
+            } else if (assignTaskToEmplRadio.isSelected()) {
+                AssignTaskToEmployee assignTaskToEmployee = new AssignTaskToEmployee(taskManagement);
+                setVisible(false);
+            } else if (viewEmplAndTasksRadio.isSelected()) {
+                ViewEmployeesAndTheirTasks viewEmployeesAndTheirTasks = new ViewEmployeesAndTheirTasks(taskManagement);
+                setVisible(false);
+            } else if (modifyTaskStatusRadio.isSelected()) {
+                ModifyStatusOfTask modifyStatusOfTask = new ModifyStatusOfTask(taskManagement);
+                setVisible(false);
+            } else if (tieTasks.isSelected()) {
+                TieTasks tieTasks = new TieTasks(taskManagement);
+                setVisible(false);
+            } else {
+                System.out.println("No option selected.");
+                return;
+            }
         }
     }
 }

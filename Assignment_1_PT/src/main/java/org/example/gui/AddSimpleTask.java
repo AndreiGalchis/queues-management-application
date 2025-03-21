@@ -1,62 +1,54 @@
 package org.example.gui;
 
 import org.example.business_logic.TaskManagement;
-import org.example.data_model.ComplexTask;
-import org.example.data_model.Employee;
 import org.example.data_model.SimpleTask;
-import org.example.data_model.Task;
-import org.example.gui.AddTask.ContinueListener;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Timestamp;
-import java.util.*;
-import java.util.List;
 
 public class AddSimpleTask extends JFrame {
-    int selectedID;
-    private final List<Task> addedTasks;
-    private final List<Employee> addedEmployees;
-    private TaskManagement taskManagement;
-    private ComplexTask complexTask;
-
-    private final JLabel indicationLabel;
-    private final JLabel startHourLabel;
+    private final int selectedID;
+    private final TaskManagement taskManagement;
     private final JTextField startHourTextField;
-    private final JLabel endHourLabel;
     private final JTextField endHourTextField;
     private final JButton addButton;
 
-    public AddSimpleTask(int selectedID, List<Task> addedTasks, List<Employee> addedEmployees, TaskManagement taskManagement, ComplexTask complexTask) {
+    public AddSimpleTask(int selectedID, TaskManagement taskManagement) {
         this.selectedID = selectedID;
-        this.addedTasks = addedTasks;
-        this.addedEmployees = addedEmployees;
         this.taskManagement = taskManagement;
-        this.complexTask = complexTask;
 
-        indicationLabel = new JLabel("Add the start hour and the end hour of the task");
-        startHourLabel = new JLabel("Start hour: ");
-        startHourTextField = new JTextField();
-        endHourLabel = new JLabel("End hour: ");
-        endHourTextField = new JTextField();
+        JLabel indicationLabel = new JLabel("Add the start and end hour of the task:", SwingConstants.CENTER);
+        JLabel startHourLabel = new JLabel("Start Hour:");
+        startHourTextField = new JTextField(10);
+        JLabel endHourLabel = new JLabel("End Hour:");
+        endHourTextField = new JTextField(10);
         addButton = new JButton("Add");
 
-        setTitle("Simple task");
-        setLayout(new GridLayout(3,2));
-        setLocationRelativeTo(null);
-        setSize(500, 500);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        JPanel startHourPanel = new JPanel(new GridLayout(1, 2));
+        startHourPanel.add(startHourLabel);
+        startHourPanel.add(startHourTextField);
+
+        JPanel endHourPanel = new JPanel(new GridLayout(1, 2));
+        endHourPanel.add(endHourLabel);
+        endHourPanel.add(endHourTextField);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(addButton);
 
         addButton.addActionListener(new AddListener());
 
+        setLayout(new GridLayout(4, 1));
         add(indicationLabel);
-        add(startHourLabel);
-        add(startHourTextField);
-        add(endHourLabel);
-        add(endHourTextField);
-        add(addButton);
+        add(startHourPanel);
+        add(endHourPanel);
+        add(buttonPanel);
+
+        setTitle("Simple Task");
+        setSize(400, 300);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setVisible(true);
     }
@@ -64,20 +56,24 @@ public class AddSimpleTask extends JFrame {
     public class AddListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if(startHourTextField.getText().equals("") || endHourTextField.getText().equals("")) {
-                JOptionPane.showMessageDialog(null, "Please fill all the fields");
+            if (startHourTextField.getText().isEmpty() || endHourTextField.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(AddSimpleTask.this, "Please fill all fields", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
-            SimpleTask addedSimpleTask = new SimpleTask(selectedID,
-                               "Uncompleted",
-                                         Integer.parseInt(startHourTextField.getText()),
-                                         Integer.parseInt(endHourTextField.getText()));
-            addedTasks.add(addedSimpleTask);
 
-            JOptionPane.showMessageDialog(AddSimpleTask.this, "Simple Task added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-            setVisible(false);
-            new Presentation(addedEmployees, addedTasks, taskManagement, complexTask).setVisible(true);
-            ///Presentation presentation = new Presentation();
-            ///presentation.setVisible(true);
+            try {
+                int startHour = Integer.parseInt(startHourTextField.getText());
+                int endHour = Integer.parseInt(endHourTextField.getText());
+
+                SimpleTask addedSimpleTask = new SimpleTask(selectedID, "Uncompleted", startHour, endHour);
+                taskManagement.addTask(addedSimpleTask);    /// adaug taskul intr un set sa verif daca id ul exista deja
+
+                JOptionPane.showMessageDialog(AddSimpleTask.this, "Simple Task added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                setVisible(false);
+                new Presentation(taskManagement).setVisible(true);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(AddSimpleTask.this, "Hours must be integers!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 }

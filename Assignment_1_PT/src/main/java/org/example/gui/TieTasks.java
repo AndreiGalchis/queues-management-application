@@ -9,17 +9,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class TieTasks extends JFrame {
-    private List<Employee> addedEmployees;
-    private List<Task> addedTasks;
     private TaskManagement taskManagement;
-    private ComplexTask complexTask;
 
     private final JLabel indicationLabel;
     private final JLabel parentTaskLabel;
@@ -27,83 +20,63 @@ public class TieTasks extends JFrame {
     private final JLabel childTaskLabel;
     private final JTextField childTaskTextField;
     private final JButton tieButton;
+    private final JButton backButton;
 
-    public TieTasks(List<Task> addedTasks, List<Employee> addedEmployees, TaskManagement taskManagement, ComplexTask complexTask) {
-        this.addedTasks = addedTasks;
-        this.addedEmployees = addedEmployees;
+    public TieTasks(TaskManagement taskManagement) {
         this.taskManagement = taskManagement;
-        this.complexTask = complexTask;
 
-        indicationLabel = new JLabel("Select a task and his subtask:");
+        indicationLabel = new JLabel("Select a task and its subtask", SwingConstants.CENTER);
         parentTaskLabel = new JLabel("Select a parent task:");
-        parentTaskTextField = new JTextField();
+        parentTaskTextField = new JTextField(10);
         childTaskLabel = new JLabel("Select a child task:");
-        childTaskTextField = new JTextField();
+        childTaskTextField = new JTextField(10);
         tieButton = new JButton("Tie");
+        backButton = new JButton("Back");
 
         setTitle("Tie tasks");
-        setLayout(new GridLayout(3, 2));
+        setSize(500, 250);
         setLocationRelativeTo(null);
-        setSize(500, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        tieButton.addActionListener(new TieListener());
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
-        add(indicationLabel);
-        add(parentTaskLabel);
-        add(parentTaskTextField);
-        add(childTaskLabel);
-        add(childTaskTextField);
-        add(tieButton);
+        JPanel indicationPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        indicationPanel.add(indicationLabel);
+
+        JPanel parentTaskPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        parentTaskPanel.add(parentTaskLabel);
+        parentTaskPanel.add(parentTaskTextField);
+
+        JPanel childTaskPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        childTaskPanel.add(childTaskLabel);
+        childTaskPanel.add(childTaskTextField);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.add(backButton);
+        buttonPanel.add(tieButton);
+
+        mainPanel.add(indicationPanel);
+        mainPanel.add(parentTaskPanel);
+        mainPanel.add(childTaskPanel);
+        mainPanel.add(buttonPanel);
+
+        tieButton.addActionListener(new TieListener());
+        backButton.addActionListener(new BackListener());
+
+        add(mainPanel);
 
         setVisible(true);
     }
 
     public class TieListener implements ActionListener {
-
-        boolean checkIfParentExists(List<Task> addedTasks, int parentTaskId) {
-            for(Task task : addedTasks) {
-                if(task.getIdTask() == parentTaskId) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        boolean checkIfChildExists(List<Task> addedTasks, int childTaskId) {
-            for(Task task : addedTasks) {
-                if(task.getIdTask() == childTaskId) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        Task getParentTask(List<Task> addedTasks, int parentTaskId) {
-            for(Task task : addedTasks) {
-                if(task.getIdTask() == parentTaskId) {
-                    return task;
-                }
-            }
-            return null;
-        }
-
-        Task getChildTask(List<Task> addedTasks, int childTaskId) {
-            for(Task task : addedTasks) {
-                if(task.getIdTask() == childTaskId) {
-                    return task;
-                }
-            }
-            return null;
-        }
-
         @Override
         public void actionPerformed(ActionEvent e) {
             int parentTaskID = Integer.parseInt(parentTaskTextField.getText());
             int childTaskID = Integer.parseInt(childTaskTextField.getText());
 
-            Task parentTask = getParentTask(addedTasks, parentTaskID);
-            Task childTask = getChildTask(addedTasks, childTaskID);
+            Task parentTask = taskManagement.getTaskById(taskManagement.getAddedTasks(), parentTaskID);
+            Task childTask =  taskManagement.getTaskById(taskManagement.getAddedTasks(), childTaskID);
 
             if (parentTask instanceof ComplexTask) {
                 ((ComplexTask) parentTask).addTask(childTask);
@@ -111,9 +84,16 @@ public class TieTasks extends JFrame {
             } else {
                 JOptionPane.showMessageDialog(null, "The selected Parent Task is not a ComplexTask!");
             }
-
-            setVisible(false);
-            Presentation presentation = new Presentation(addedEmployees, addedTasks, taskManagement, complexTask);
         }
     }
+
+    public class BackListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            setVisible(false);
+            new Presentation(taskManagement).setVisible(true);
+        }
+    }
+
+
 }

@@ -5,6 +5,7 @@ import java.io.Serializable;
 public sealed abstract class Task implements Serializable permits SimpleTask, ComplexTask {
     private int idTask;
     private String statusTask;
+    private static final long serialVersionUID = 1L;
 
     public Task(int idTask, String statusTask) {
         this.idTask = idTask;

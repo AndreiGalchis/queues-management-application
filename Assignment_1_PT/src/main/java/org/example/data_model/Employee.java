@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class Employee implements Serializable {
     private int idEmployee;
     private String name;
+    private static final long serialVersionUID = 1L;
 
     public Employee(int idEmployee, String name) {
         this.idEmployee = idEmployee;
@@ -26,4 +27,10 @@ public class Employee implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return this.getName();
+    }
+
 }

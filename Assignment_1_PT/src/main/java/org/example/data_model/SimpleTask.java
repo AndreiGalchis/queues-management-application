@@ -1,8 +1,11 @@
 package org.example.data_model;
 
-public non-sealed class SimpleTask extends Task{
+import java.io.Serializable;
+
+public non-sealed class SimpleTask extends Task implements Serializable{
     private int startHour;
     private int endHour;
+    private static final long serialVersionUID = 1L;
 
     public SimpleTask(int idTask, String statusTask, int startHour, int endHour) {
         super(idTask, statusTask);
