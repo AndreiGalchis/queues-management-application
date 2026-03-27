@@ -5,8 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.example</groupId>
-    <artifactId>Assignment_2_PT</artifactId>
+    <artifactId>queues-management-application</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <name>Queues Management Application</name>
+    <description>Queue simulation with Swing UI and multiple dispatch strategies.</description>
 
     <properties>
         <maven.compiler.source>23</maven.compiler.source>
